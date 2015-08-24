@@ -1,14 +1,15 @@
 # encoding: utf-8
 
+require "rmmseg"
 require "lingua/stemmer"
 
 class StuffClassifier::Tokenizer
   require  "stuff-classifier/tokenizer/tokenizer_properties"
-  
+
   def initialize(opts={})
     @language = opts.key?(:language) ? opts[:language] : "en"
     @properties = StuffClassifier::Tokenizer::TOKENIZER_PROPERTIES[@language]
-    
+
     @stemming = opts.key?(:stemming) ? opts[:stemming] : true
     if @stemming
       @stemmer = Lingua::Stemmer.new(:language => @language)
@@ -52,8 +53,15 @@ class StuffClassifier::Tokenizer
       if preprocessing_regexps
         preprocessing_regexps.each { |regexp,replace_by| line.gsub!(regexp, replace_by) }
       end
+      words = []
+      algor = RMMSeg::Algorithm.new(line)
+      loop do
+        tok = algor.next_token
+        break if tok.nil?
+        words << tok.text
+      end
 
-      line.gsub(/\p{Word}+/).each do |w|
+      words.each do |w|
           next if w == '' || ignore_words.member?(w.downcase)
 
         if stemming? and stemable?(w)
@@ -70,10 +78,10 @@ class StuffClassifier::Tokenizer
     return words
   end
 
-private 
+private
 
   def stemable?(word)
     word =~ /^\p{Alpha}+$/
   end
-  
+
 end

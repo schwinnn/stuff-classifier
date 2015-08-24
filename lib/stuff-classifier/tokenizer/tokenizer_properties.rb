@@ -2,7 +2,7 @@
 require 'set'
 StuffClassifier::Tokenizer::TOKENIZER_PROPERTIES = {
   "en" => {
-    :preprocessing_regexps => {/['`]/ => '',/[_]/ => ' '},
+    :preprocessing_regexps => {/['`-]/ => '',/[_]/ => ' '},
     :stop_word => Set.new([
     'a', 'about', 'above', 'across', 'after', 'afterwards',
     'again', 'against', 'all', 'almost', 'alone', 'along',
